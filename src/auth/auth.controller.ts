@@ -8,14 +8,14 @@ import {
   Delete,
   BadRequestException,
   Res,
+  Req,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UpdateAuthDto } from './dto/update-auth.dto';
-import * as bcrypt from 'bcrypt';
 import { RegisterDto } from './dto/RegisterDto';
 import { LoginDto } from './dto/LoginDto';
-import { Response } from 'express';
-import { JwtService } from '@nestjs/jwt';
+import { Response, Request } from 'express';
+import { UserEntity } from './entities/auth.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -26,13 +26,12 @@ export class AuthController {
     if (createAuthDto.password !== createAuthDto.password_confirm) {
       throw new BadRequestException('Password did not match');
     }
-    // hash password
-    const password = await bcrypt.hash(createAuthDto.password, 10);
+
     return this.authService.create({
       first_name: createAuthDto.first_name,
       last_name: createAuthDto.last_name,
       email: createAuthDto.email,
-      password: password,
+      password: await this.authService.hashPassword(createAuthDto.password),
       phone_number: createAuthDto.phone_number,
     });
   }
@@ -43,8 +42,12 @@ export class AuthController {
   }
 
   @Get('/user/:id')
-  findOne(@Param('id') id: string) {
-    return this.authService.findOne(+id);
+  findOne(@Param('id') id: string, @Req() request: Request) {
+    // get the cookies
+    return this.authService.loginUser({
+      id,
+      cookie: request.cookies['userJWT'],
+    });
   }
 
   @Patch(':id')
@@ -61,7 +64,7 @@ export class AuthController {
   async login(
     @Body() loginUserDto: LoginDto,
     @Res({ passthrough: true }) response: Response,
-  ) {
+  ): Promise<UserEntity> {
     const user = await this.authService.login({
       email: loginUserDto.email,
       password: loginUserDto.password,

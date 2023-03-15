@@ -51,4 +51,20 @@ export class AuthService {
   async sign(user: UserEntity): Promise<string> {
     return this.jwtService.signAsync({ id: user.id });
   }
+
+  async hashPassword(password: string): Promise<string> {
+    return bcrypt.hash(password, 10);
+  }
+
+  async loginUser(payload: {
+    id: string;
+    cookie: string;
+  }): Promise<UserEntity> {
+    const userByCookie = await this.jwtService.verifyAsync(payload.cookie);
+
+    if (+userByCookie.id !== +payload.id) {
+      throw new BadRequestException('user not authenticated');
+    }
+    return this.findOne({ id: userByCookie.id });
+  }
 }
