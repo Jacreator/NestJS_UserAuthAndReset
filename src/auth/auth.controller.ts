@@ -9,6 +9,8 @@ import {
   BadRequestException,
   Res,
   Req,
+  ClassSerializerInterceptor,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UpdateAuthDto } from './dto/update-auth.dto';
@@ -16,6 +18,7 @@ import { RegisterDto } from './dto/RegisterDto';
 import { LoginDto } from './dto/LoginDto';
 import { Response, Request } from 'express';
 import { UserEntity } from './entities/auth.entity';
+import { AuthInterceptor } from './auth.interceptor';
 
 @Controller('auth')
 export class AuthController {
@@ -41,6 +44,7 @@ export class AuthController {
     return this.authService.findAll();
   }
 
+  @UseInterceptors(ClassSerializerInterceptor, AuthInterceptor)
   @Get('/user/:id')
   findOne(@Param('id') id: string, @Req() request: Request) {
     // get the cookies
@@ -60,6 +64,7 @@ export class AuthController {
     return this.authService.remove(+id);
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Post('/login')
   async login(
     @Body() loginUserDto: LoginDto,
