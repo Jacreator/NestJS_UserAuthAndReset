@@ -21,6 +21,7 @@ import { UserEntity } from './entities/auth.entity';
 import { AuthInterceptor } from './auth.interceptor';
 
 @Controller('auth')
+@UseInterceptors(ClassSerializerInterceptor)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -64,7 +65,6 @@ export class AuthController {
     return this.authService.remove(+id);
   }
 
-  @UseInterceptors(ClassSerializerInterceptor)
   @Post('/login')
   async login(
     @Body() loginUserDto: LoginDto,
@@ -81,5 +81,16 @@ export class AuthController {
     });
 
     return user;
+  }
+
+  @UseInterceptors(AuthInterceptor)
+  @Post('/user/logout')
+  async logout(
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<object> {
+    response.clearCookie('userJWT');
+    return {
+      message: 'logout successful',
+    };
   }
 }

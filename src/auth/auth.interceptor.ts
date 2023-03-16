@@ -12,10 +12,14 @@ import { JwtService } from '@nestjs/jwt';
 export class AuthInterceptor implements NestInterceptor {
   constructor(private readonly jwtService: JwtService) {}
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const request = context.switchToHttp().getRequest();
-    const userJWT = request.cookies['userJWT'];
+    try {
+      const request = context.switchToHttp().getRequest();
+      const userJWT = request.cookies['userJWT'];
 
-    if (!this.jwtService.verify(userJWT)) {
+      if (!this.jwtService.verify(userJWT)) {
+        throw new UnauthorizedException();
+      }
+    } catch (e) {
       throw new UnauthorizedException();
     }
     return next.handle();

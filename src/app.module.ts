@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import configuration from './config/config';
 import { DatabaseType } from 'typeorm';
+import { ResetModule } from './reset/reset.module';
 
 const mySQLDatabase: DatabaseType = 'mysql';
 @Module({
@@ -25,6 +26,7 @@ const mySQLDatabase: DatabaseType = 'mysql';
       autoLoadEntities: true,
       synchronize: true,
     }),
+    ResetModule,
   ],
   controllers: [AppController],
   providers: [AppService],
