@@ -5,8 +5,8 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
-} from '@nestjs/common';
+  Delete, BadRequestException
+} from "@nestjs/common";
 import { ResetService } from './reset.service';
 import { CreateResetDto } from './dto/create-reset.dto';
 import { UpdateResetDto } from './dto/update-reset.dto';
@@ -20,8 +20,16 @@ export class ResetController {
 
   @Post('/forgot')
   async create(@Body() createResetDto: CreateResetDto) {
-    createResetDto.token = Math.random().toString(36).substring(2, 50);
     return await this.resetService.create(createResetDto);
+  }
+
+  @Post()
+  async reset(@Body() updateResetDto: UpdateResetDto) {
+    if (updateResetDto.password !== updateResetDto.password_confirm) {
+      throw new BadRequestException('Password mismatch');
+    }
+
+    return await this.resetService.resetPassword(updateResetDto);
   }
 
   @Get()

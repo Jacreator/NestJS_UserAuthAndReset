@@ -28,8 +28,9 @@ export class AuthService {
     return this.userRepository.findOne({ where: condition });
   }
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
+  async update(id: number, updateAuthDto: UpdateAuthDto) {
+    // @ts-ignore
+    return this.userRepository.update(id, updateAuthDto);
   }
 
   remove(id: number) {

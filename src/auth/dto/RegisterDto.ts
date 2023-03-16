@@ -1,4 +1,4 @@
-import { IsDefined, IsEmail, IsNotEmpty } from 'class-validator';
+import { IsAlphanumeric, IsDefined, IsEmail, IsNotEmpty } from "class-validator";
 import { Unique } from "typeorm";
 
 export class RegisterDto {
@@ -17,7 +17,12 @@ export class RegisterDto {
 
   @IsDefined()
   @IsNotEmpty()
+  @IsAlphanumeric()
   password?: string;
+
+  @IsDefined()
+  @IsNotEmpty()
+  @IsAlphanumeric()
   password_confirm?: string;
   phone_number?: string;
 }

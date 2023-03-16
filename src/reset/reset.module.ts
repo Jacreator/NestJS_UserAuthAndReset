@@ -4,8 +4,7 @@ import { ResetController } from './reset.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ResetEntity } from './entities/reset.entity';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { ConfigModule } from '@nestjs/config';
-// import configuration from './config/config';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   controllers: [ResetController],
@@ -21,6 +20,7 @@ import { ConfigModule } from '@nestjs/config';
         from: 'jambone.james82@gmail.com',
       },
     }),
+    AuthModule,
   ],
 })
 export class ResetModule {}

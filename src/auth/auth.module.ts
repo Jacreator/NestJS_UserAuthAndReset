@@ -8,7 +8,7 @@ import { jwtConstants } from './jwtConstants';
 
 @Module({
   controllers: [AuthController],
-  providers: [AuthService],
+  exports: [AuthService],
   imports: [
     TypeOrmModule.forFeature([UserEntity]),
     JwtModule.register({
@@ -16,5 +16,6 @@ import { jwtConstants } from './jwtConstants';
       signOptions: { expiresIn: '30m' },
     }),
   ],
+  providers: [AuthService],
 })
 export class AuthModule {}
